@@ -1,0 +1,111 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300;0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700;0,14..32,800&display=swap');
+
+@import "tailwindcss";
+
+@theme {
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', system-ui, sans-serif;
+  --font-mono: ui-monospace, 'SF Mono', Consolas, monospace;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   iOS 18 Design Tokens  —  Light Mode
+   System colours from Apple HIG
+═══════════════════════════════════════════════════════════ */
+:root {
+  /* Backgrounds */
+  --bg:               #f2f2f7;           /* systemGroupedBackground     */
+  --bg-elevated:      #ffffff;           /* secondarySystemGroupedBg    */
+  --bg-inset:         #e5e5ea;           /* tertiarySystemGroupedBg     */
+
+  /* Frosted glass surfaces */
+  --surface:          rgba(255,255,255,0.70);
+  --surface-hover:    rgba(255,255,255,0.88);
+  --surface-thick:    rgba(255,255,255,0.88);
+
+  /* Borders */
+  --border:           rgba(60,60,67,0.15);
+  --border-strong:    rgba(60,60,67,0.30);
+
+  /* Text */
+  --text:             #1c1c1e;           /* label                       */
+  --text-secondary:   rgba(60,60,67,0.85);
+  --text-muted:       rgba(60,60,67,0.50);
+  --text-placeholder: rgba(60,60,67,0.28);
+
+  /* iOS Tint Palette */
+  --tint:             #007aff;           /* systemBlue                  */
+  --tint-indigo:      #5856d6;           /* systemIndigo                */
+  --tint-purple:      #af52de;           /* systemPurple                */
+  --tint-pink:        #ff2d55;           /* systemPink                  */
+  --tint-teal:        #32ade6;           /* systemTeal                  */
+
+  /* Shadows */
+  --shadow-sm:        0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.05);
+  --shadow-glass:     0 8px 32px rgba(0,0,0,0.10), 0 2px 8px rgba(0,0,0,0.06);
+  --shadow-elevated:  0 12px 40px rgba(0,0,0,0.14), 0 4px 12px rgba(0,0,0,0.08);
+
+  /* Geometry */
+  --blur:             22px;
+  --blur-thick:       40px;
+  --radius-card:      22px;
+  --radius-btn:       14px;
+  --radius-pill:      999px;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   iOS 18 Design Tokens  —  Dark Mode
+═══════════════════════════════════════════════════════════ */
+.dark {
+  --bg:               #000000;
+  --bg-elevated:      #1c1c1e;
+  --bg-inset:         #2c2c2e;
+
+  --surface:          rgba(28,28,30,0.75);
+  --surface-hover:    rgba(44,44,46,0.88);
+  --surface-thick:    rgba(44,44,46,0.92);
+
+  --border:           rgba(255,255,255,0.11);
+  --border-strong:    rgba(255,255,255,0.22);
+
+  --text:             #ffffff;
+  --text-secondary:   rgba(235,235,245,0.80);
+  --text-muted:       rgba(235,235,245,0.48);
+  --text-placeholder: rgba(235,235,245,0.26);
+
+  --tint:             #0a84ff;
+  --tint-indigo:      #5e5ce6;
+  --tint-purple:      #bf5af2;
+  --tint-pink:        #ff375f;
+  --tint-teal:        #5ac8fa;
+
+  --shadow-sm:        0 1px 3px rgba(0,0,0,0.30), 0 1px 2px rgba(0,0,0,0.20);
+  --shadow-glass:     0 8px 32px rgba(0,0,0,0.50), 0 2px 8px rgba(0,0,0,0.30);
+  --shadow-elevated:  0 12px 40px rgba(0,0,0,0.60), 0 4px 12px rgba(0,0,0,0.35);
+}
+
+/* ── Base ────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background 0.35s ease, color 0.35s ease;
+}
+
+/* ── Scrollbar ───────────────────────────────────────────── */
+::-webkit-scrollbar        { width: 5px; }
+::-webkit-scrollbar-track  { background: transparent; }
+::-webkit-scrollbar-thumb  { background: var(--border-strong); border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover { background: var(--tint); }
+
+/* ── Selection ───────────────────────────────────────────── */
+::selection {
+  background: color-mix(in srgb, var(--tint) 25%, transparent);
+  color: var(--text);
+}
