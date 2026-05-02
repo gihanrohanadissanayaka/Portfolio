@@ -476,6 +476,367 @@ function ExperienceSection() {
   )
 }
 
+// ── Calendly ─────────────────────────────────────────────
+declare global {
+  interface Window {
+    Calendly?: {
+      initPopupWidget: (opts: { url: string }) => void
+    }
+  }
+}
+
+const CALENDLY_URL = 'https://calendly.com/dissanayaka-gihanrohana/30min'
+
+// ── Projects data ──────────────────────────────────────────
+const PROJECTS = [
+  {
+    id: 'elitecuts',
+    title: 'EliteCuts',
+    tagline: 'Smart appointment scheduling system for modern salons',
+    tags: ['React', 'Express', 'Spring Boot', 'Online Booking'],
+    thumbnail: '/project_salon_cover.png',
+    demoUrl: 'https://elite-cuts-fawn.vercel.app',
+    githubUrl: null as string | null,
+    problem: 'Many small salons struggle with manual booking processes, leading to missed appointments, double-bookings, and poor customer communication. Staff spend hours managing schedules instead of focusing on their craft.',
+    solution: 'EliteCuts delivers a seamless digital booking experience with real-time availability, automated email notifications, and a powerful admin dashboard — giving salon owners full control while customers enjoy a frictionless booking journey.',
+    features: [
+      { emoji: '📅', title: 'Real-time Scheduling', desc: 'Live slot availability with instant conflict detection' },
+      { emoji: '🔔', title: 'Email Notifications', desc: 'Automated booking confirmations & reminders' },
+      { emoji: '👤', title: 'Customer Management', desc: 'Full customer profiles, preferences & history' },
+      { emoji: '📊', title: 'Admin Dashboard', desc: 'Complete booking overview with analytics' },
+      { emoji: '🖼️', title: 'Image Uploads', desc: 'Showcase styles & services with rich media' },
+      { emoji: '⏱️', title: 'Time Slot Management', desc: 'Flexible working hours & schedule config' },
+    ],
+    techStack: [
+      { label: 'Frontend', color: 'var(--tint)', items: ['React', 'Angular'] },
+      { label: 'Backend', color: 'var(--tint-indigo)', items: ['Spring Boot', 'Express'] },
+      { label: 'DevOps', color: 'var(--tint-teal)', items: ['Docker', 'CI/CD Pipelines'] },
+    ],
+    highlights: [
+      'Designed scalable REST APIs handling concurrent booking requests',
+      'Built reusable UI component library shared across Angular & React views',
+      'Optimised API response times for high-concurrency booking scenarios',
+      'Containerised full-stack deployment using Docker Compose',
+      'Automated CI/CD pipeline for zero-downtime deployments',
+    ],
+    screenshots: ['/project_salon_ss_01.png', '/project_salon_ss_02.png', '/project_salon_ss_03.png'],
+  },
+  {
+    id: 'fitbook',
+    title: 'FitBook',
+    tagline: 'Online class booking & membership platform for modern gyms',
+    tags: ['React', 'Node.js', 'MongoDB', 'Online Booking'],
+    thumbnail: '/project_gym_cover.png',
+    demoUrl: null as string | null,
+    githubUrl: null as string | null,
+    problem: 'Gym operators relying on phone calls and spreadsheets face constant scheduling conflicts, membership lapses, and frustrated members who can\'t easily view or book available classes. Front-desk staff are overwhelmed while peak-hour classes go under-utilised.',
+    solution: 'FitBook gives gyms a fully digital operation centre — members self-serve class bookings in real time, administrators manage schedules and membership plans from a single dashboard, and automated reminders keep attendance rates high.',
+    features: [
+      { emoji: '🏋️', title: 'Class Booking', desc: 'Real-time schedule with instant seat reservation' },
+      { emoji: '💳', title: 'Membership Plans', desc: 'Flexible plan management with auto-renewal support' },
+      { emoji: '👨‍🏫', title: 'Trainer Profiles', desc: 'Dedicated pages for trainers with class history' },
+      { emoji: '🔔', title: 'Smart Reminders', desc: 'Automated email & SMS class reminders' },
+      { emoji: '📊', title: 'Capacity Management', desc: 'Live waitlist & capacity enforcement per class' },
+      { emoji: '📈', title: 'Attendance Analytics', desc: 'Insights on peak hours, popular classes & retention' },
+    ],
+    techStack: [
+      { label: 'Frontend', color: 'var(--tint)', items: ['React', 'Tailwind CSS'] },
+      { label: 'Backend', color: 'var(--tint-indigo)', items: ['Node.js', 'Express', 'MongoDB'] },
+      { label: 'Infra', color: 'var(--tint-teal)', items: ['Docker', 'AWS S3', 'Nodemailer'] },
+    ],
+    highlights: [
+      'Engineered a conflict-free slot reservation engine with optimistic concurrency control',
+      'Designed a role-based access system for members, trainers, and gym admins',
+      'Implemented real-time waitlist promotion with automated email triggers',
+      'Built a recurring membership billing module with grace-period handling',
+      'Reduced average booking time by 80% compared to the previous phone-based process',
+    ],
+    screenshots: ['/project_gym_ss_01.png', '/project_gym_ss_02.png', '/project_gym_ss_03.png'],
+  },
+]
+
+type Project = typeof PROJECTS[0]
+
+// ── Project Modal ──────────────────────────────────────────
+function ProjectModal({ project, onClose }: { project: Project; onClose: () => void }) {
+  const [lightbox, setLightbox] = useState<string | null>(null)
+
+  useEffect(() => {
+    document.body.style.overflow = 'hidden'
+    function onKey(e: KeyboardEvent) {
+      if (e.key === 'Escape') {
+        if (lightbox) setLightbox(null)
+        else onClose()
+      }
+      if (e.key === 'ArrowRight' && lightbox) {
+        const idx = project.screenshots.indexOf(lightbox)
+        if (idx < project.screenshots.length - 1) setLightbox(project.screenshots[idx + 1])
+      }
+      if (e.key === 'ArrowLeft' && lightbox) {
+        const idx = project.screenshots.indexOf(lightbox)
+        if (idx > 0) setLightbox(project.screenshots[idx - 1])
+      }
+    }
+    window.addEventListener('keydown', onKey)
+    return () => {
+      document.body.style.overflow = ''
+      window.removeEventListener('keydown', onKey)
+    }
+  }, [onClose, lightbox, project.screenshots])
+
+  function bookDemo() {
+    if (window.Calendly) {
+      window.Calendly.initPopupWidget({ url: CALENDLY_URL })
+    } else {
+      window.open(CALENDLY_URL, '_blank', 'noopener,noreferrer')
+    }
+  }
+
+  return (
+    <div className="modal-backdrop" onClick={onClose}>
+      <div className="modal-sheet glass-thick" onClick={e => e.stopPropagation()}>
+
+        {/* Sticky close */}
+        <button className="modal-close-btn" onClick={onClose} aria-label="Close">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+
+        <div className="modal-scroll-body">
+
+          {/* ── 1. Title + Tags ── */}
+          <div className="modal-section modal-header-section">
+            <h2 className="modal-title">{project.title}</h2>
+            <div className="modal-tags">
+              {project.tags.map(t => <span key={t} className="modal-tag">{t}</span>)}
+            </div>
+            <p className="modal-tagline">{project.tagline}</p>
+          </div>
+
+          {/* ── 2. Hero screenshot ── */}
+          <div className="modal-hero-img-wrap">
+            <img src={project.thumbnail} alt={`${project.title} cover`} className="modal-hero-img" />
+          </div>
+
+          {/* ── 3. Action buttons ── */}
+          <div className="modal-actions">
+            {project.demoUrl && (
+              <a href={project.demoUrl} target="_blank" rel="noopener noreferrer" className="ios-btn ios-btn-primary modal-action-btn">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
+                </svg>
+                Live Demo
+              </a>
+            )}
+            {project.githubUrl && (
+              <a href={project.githubUrl} target="_blank" rel="noopener noreferrer" className="ios-btn ios-btn-ghost modal-action-btn">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+                </svg>
+                GitHub
+              </a>
+            )}
+            <button className="ios-btn ios-btn-ghost modal-action-btn" onClick={bookDemo}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+              </svg>
+              Book Demo Call
+            </button>
+          </div>
+
+          {/* ── 4. Problem / Solution ── */}
+          <div className="modal-section">
+            <div className="modal-ps-grid">
+              <div className="modal-ps-card modal-ps-problem">
+                <p className="modal-section-label">The Problem</p>
+                <p className="modal-ps-text">{project.problem}</p>
+              </div>
+              <div className="modal-ps-card modal-ps-solution">
+                <p className="modal-section-label">The Solution</p>
+                <p className="modal-ps-text">{project.solution}</p>
+              </div>
+            </div>
+          </div>
+
+          {/* ── 5. Features Grid ── */}
+          <div className="modal-section">
+            <p className="modal-section-label">Key Features</p>
+            <div className="modal-features-grid">
+              {project.features.map(f => (
+                <div key={f.title} className="modal-feature-card glass-card">
+                  <span className="modal-feature-emoji">{f.emoji}</span>
+                  <span className="modal-feature-title">{f.title}</span>
+                  <span className="modal-feature-desc">{f.desc}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* ── 6. Tech Stack ── */}
+          <div className="modal-section">
+            <p className="modal-section-label">Tech Stack</p>
+            <div className="modal-tech-groups">
+              {project.techStack.map(g => (
+                <div key={g.label} className="modal-tech-group">
+                  <span className="modal-tech-group-label" style={{ color: g.color }}>{g.label}</span>
+                  <div className="modal-tech-chips">
+                    {g.items.map(item => (
+                      <span key={item} className="skill-tag" style={{ color: g.color, background: `color-mix(in srgb, ${g.color} 10%, transparent)`, borderColor: `color-mix(in srgb, ${g.color} 22%, transparent)` }}>
+                        {item}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* ── 7. Engineering Highlights ── */}
+          <div className="modal-section">
+            <p className="modal-section-label">Engineering Highlights</p>
+            <ul className="modal-highlights-list">
+              {project.highlights.map(h => (
+                <li key={h} className="modal-highlight-item">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--tint)', flexShrink: 0 }}>
+                    <polyline points="20 6 9 17 4 12"/>
+                  </svg>
+                  {h}
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* ── 8. Screenshots ── */}
+          {project.screenshots.length > 0 && (
+            <div className="modal-section">
+              <p className="modal-section-label">Screenshots</p>
+              <div className="modal-screenshots-row">
+                {project.screenshots.map((src, i) => (
+                  <button key={i} className="modal-screenshot-thumb-btn" onClick={() => setLightbox(src)} aria-label={`View screenshot ${i + 1}`}>
+                    <img src={src} alt={`${project.title} screenshot ${i + 1}`} className="modal-screenshot-thumb" />
+                    <span className="modal-screenshot-zoom-icon">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                        <line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/>
+                      </svg>
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* ── 9. CTA ── */}
+          <div className="modal-cta-section">
+            <h3 className="modal-cta-heading">Interested in this project?</h3>
+            <p className="modal-cta-sub">Let's hop on a 30-minute call to discuss it or explore how I can build something similar for you.</p>
+            <button className="ios-btn ios-btn-primary modal-cta-btn" onClick={bookDemo}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+              </svg>
+              Book a Call
+            </button>
+          </div>
+
+        </div>
+      </div>
+
+      {/* ── Lightbox — rendered outside .modal-sheet so position:fixed targets the viewport, not the animated transform parent ── */}
+      {lightbox && (
+        <div className="lightbox-backdrop" onClick={() => setLightbox(null)}>
+          <button className="lightbox-close" onClick={() => setLightbox(null)} aria-label="Close preview">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+              <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
+
+          {project.screenshots.indexOf(lightbox) > 0 && (
+            <button className="lightbox-arrow lightbox-arrow-prev" onClick={e => { e.stopPropagation(); const i = project.screenshots.indexOf(lightbox); setLightbox(project.screenshots[i - 1]) }} aria-label="Previous">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+            </button>
+          )}
+
+          <img src={lightbox} alt="Preview" className="lightbox-img" onClick={e => e.stopPropagation()} />
+
+          {project.screenshots.indexOf(lightbox) < project.screenshots.length - 1 && (
+            <button className="lightbox-arrow lightbox-arrow-next" onClick={e => { e.stopPropagation(); const i = project.screenshots.indexOf(lightbox); setLightbox(project.screenshots[i + 1]) }} aria-label="Next">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
+          )}
+
+          <div className="lightbox-dots">
+            {project.screenshots.map((s, i) => (
+              <button key={i} className={`lightbox-dot${s === lightbox ? ' active' : ''}`} onClick={e => { e.stopPropagation(); setLightbox(s) }} aria-label={`Go to screenshot ${i + 1}`} />
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
+// ── Projects Section ───────────────────────────────────────
+function ProjectsSection() {
+  const sectionRef = useScrollReveal()
+  const [selected, setSelected] = useState<Project | null>(null)
+
+  return (
+    <section id="projects" style={{ paddingTop: 100 }} ref={sectionRef as React.RefObject<HTMLElement>}>
+      <div className="reveal" style={{ marginBottom: 36 }}>
+        <span className="about-eyebrow">What I've built</span>
+        <h2 className="gradient-text" style={{ fontSize: 'clamp(24px, 3.5vw, 36px)', fontWeight: 800, letterSpacing: '-0.6px', margin: '8px 0 0' }}>
+          Projects
+        </h2>
+      </div>
+
+      <div className="projects-grid">
+        {PROJECTS.map((p, i) => (
+          <button
+            key={p.id}
+            className="reveal project-card glass-card"
+            style={{ '--reveal-delay': `${i * 0.1}s` } as React.CSSProperties}
+            onClick={() => setSelected(p)}
+          >
+            {/* Thumbnail */}
+            <div className="project-card-img-wrap">
+              <img src={p.thumbnail} alt={p.title} className="project-card-img" />
+              {p.demoUrl && <span className="project-live-badge">● Live</span>}
+            </div>
+
+            {/* Body */}
+            <div className="project-card-body">
+              <div className="project-card-tags">
+                {p.tags.slice(0, 3).map(t => <span key={t} className="project-card-tag">{t}</span>)}
+              </div>
+              <h3 className="project-card-title">{p.title}</h3>
+              <p className="project-card-tagline">{p.tagline}</p>
+            </div>
+
+            {/* Footer */}
+            <div className="project-card-footer">
+              <span className="project-card-cta">View Details</span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="9 18 15 12 9 6"/>
+              </svg>
+            </div>
+          </button>
+        ))}
+      </div>
+
+      {selected && <ProjectModal project={selected} onClose={() => setSelected(null)} />}
+    </section>
+  )
+}
+
+const CALL_AGENDA = [
+  { text: 'Get to know each other & share your goals' },
+  { text: 'Job opportunities, freelance or consulting work' },
+  { text: 'Collaborations, open-source or side projects' },
+  { text: 'Tech advice, mentoring or just a friendly chat' },
+  { text: 'Anything else on your mind — all topics welcome' },
+]
+
 // ── Contact Section ────────────────────────────────────────
 const CONTACT_ITEMS = [
   {
@@ -507,8 +868,8 @@ const CONTACT_ITEMS = [
       </svg>
     ),
     label: 'LinkedIn',
-    value: 'linkedin.com/in/gihandissanayaka',
-    href: 'https://www.linkedin.com/in/gihandissanayaka/',
+    value: 'linkedin.com/in/gihan-dissanayaka/',
+    href: 'https://www.linkedin.com/in/gihan-dissanayaka/',
     color: 'var(--tint-indigo)',
   },
   {
@@ -537,23 +898,37 @@ const CONTACT_ITEMS = [
 
 function ContactSection() {
   const sectionRef = useScrollReveal()
-  const [form, setForm] = useState({ name: '', email: '', message: '' })
-  const [sent, setSent] = useState(false)
 
-  function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
-    const { name, email, message } = form
-    const subject = encodeURIComponent(`Portfolio Contact from ${name}`)
-    const body = encodeURIComponent(`Name: ${name}\nEmail: ${email}\n\n${message}`)
-    window.location.href = `mailto:dissanayaka.gihanrohana@gmail.com?subject=${subject}&body=${body}`
-    setSent(true)
+  useEffect(() => {
+    const link = document.createElement('link')
+    link.rel = 'stylesheet'
+    link.href = 'https://assets.calendly.com/assets/external/widget.css'
+    document.head.appendChild(link)
+
+    const script = document.createElement('script')
+    script.src = 'https://assets.calendly.com/assets/external/widget.js'
+    script.async = true
+    document.head.appendChild(script)
+
+    return () => {
+      if (document.head.contains(link)) document.head.removeChild(link)
+      if (document.head.contains(script)) document.head.removeChild(script)
+    }
+  }, [])
+
+  function openCalendly(url: string) {
+    if (window.Calendly) {
+      window.Calendly.initPopupWidget({ url })
+    } else {
+      window.open(url, '_blank', 'noopener,noreferrer')
+    }
   }
 
   return (
     <section id="contact" style={{ paddingTop: 100 }} ref={sectionRef as React.RefObject<HTMLElement>}>
       {/* Header */}
       <div className="reveal" style={{ marginBottom: 36 }}>
-        <span className="about-eyebrow">Say hello</span>
+        <span className="about-eyebrow">Let's connect</span>
         <h2 className="gradient-text" style={{ fontSize: 'clamp(24px, 3.5vw, 36px)', fontWeight: 800, letterSpacing: '-0.6px', margin: '8px 0 0' }}>
           Get In Touch
         </h2>
@@ -565,7 +940,6 @@ function ContactSection() {
           <p style={{ fontSize: 14, color: 'var(--text-muted)', lineHeight: 1.75, margin: '0 0 28px' }}>
             I'm open to new opportunities, collaborations, or just a friendly chat about tech. Feel free to reach out through any of the channels below.
           </p>
-
           <ul className="contact-list">
             {CONTACT_ITEMS.map(({ icon, label, value, href, color }) => (
               <li key={label} className="contact-item">
@@ -587,66 +961,57 @@ function ContactSection() {
           </ul>
         </div>
 
-        {/* ── Right: Contact form ─────────────────────── */}
+        {/* ── Right: Book a Call ──────────────────────── */}
         <div className="reveal contact-form-wrap glass-card" style={{ '--reveal-delay': '0.15s' } as React.CSSProperties}>
-          {sent ? (
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', gap: 16, padding: '40px 0', textAlign: 'center' }}>
-              <span style={{ fontSize: 48 }}>✉️</span>
-              <h3 style={{ margin: 0, fontSize: 20, fontWeight: 700, color: 'var(--text)' }}>Message sent!</h3>
-              <p style={{ margin: 0, color: 'var(--text-muted)', fontSize: 14 }}>Your email client should have opened. I'll get back to you soon.</p>
-              <button className="ios-btn ios-btn-ghost" style={{ marginTop: 8 }} onClick={() => setSent(false)}>Send another</button>
+
+          {/* Card header */}
+          <div className="book-call-header">
+            <div className="book-call-cal-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                <line x1="16" y1="2" x2="16" y2="6"/>
+                <line x1="8" y1="2" x2="8" y2="6"/>
+                <line x1="3" y1="10" x2="21" y2="10"/>
+              </svg>
             </div>
-          ) : (
-            <form className="contact-form" onSubmit={handleSubmit} noValidate>
-              <h3 style={{ margin: '0 0 24px', fontSize: 18, fontWeight: 700, color: 'var(--text)' }}>Send a message</h3>
+            <div>
+              <h3 style={{ margin: 0, fontSize: 18, fontWeight: 700, color: 'var(--text)' }}>Book a Call</h3>
+              <p style={{ margin: '4px 0 0', fontSize: 13, color: 'var(--text-muted)' }}>30-minute call — no agenda needed</p>
+            </div>
+            <span className="meeting-duration-badge">30 min</span>
+          </div>
 
-              <div className="contact-field">
-                <label className="contact-label" htmlFor="cf-name">Name</label>
-                <input
-                  id="cf-name"
-                  className="contact-input"
-                  type="text"
-                  placeholder="Gihan Dissanayaka"
-                  required
-                  value={form.name}
-                  onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
-                />
-              </div>
-
-              <div className="contact-field">
-                <label className="contact-label" htmlFor="cf-email">Email</label>
-                <input
-                  id="cf-email"
-                  className="contact-input"
-                  type="email"
-                  placeholder="you@example.com"
-                  required
-                  value={form.email}
-                  onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
-                />
-              </div>
-
-              <div className="contact-field">
-                <label className="contact-label" htmlFor="cf-message">Message</label>
-                <textarea
-                  id="cf-message"
-                  className="contact-input contact-textarea"
-                  placeholder="Hi Gihan, I'd love to discuss…"
-                  required
-                  rows={5}
-                  value={form.message}
-                  onChange={e => setForm(f => ({ ...f, message: e.target.value }))}
-                />
-              </div>
-
-              <button type="submit" className="ios-btn ios-btn-primary contact-submit">
-                Send Message
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                  <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
+          {/* What we'll cover */}
+          <p style={{ fontSize: 12, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--text-placeholder)', margin: '0 0 12px' }}>What we'll cover</p>
+          <ul className="call-agenda">
+            {CALL_AGENDA.map(({ text }) => (
+              <li key={text} className="call-agenda-item">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--tint)', flexShrink: 0 }}>
+                  <polyline points="20 6 9 17 4 12"/>
                 </svg>
-              </button>
-            </form>
-          )}
+                {text}
+              </li>
+            ))}
+          </ul>
+
+          {/* Primary CTA */}
+          <button className="ios-btn ios-btn-primary contact-submit" style={{ marginTop: 28 }} onClick={() => openCalendly(CALENDLY_URL)}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+              <line x1="16" y1="2" x2="16" y2="6"/>
+              <line x1="8" y1="2" x2="8" y2="6"/>
+              <line x1="3" y1="10" x2="21" y2="10"/>
+            </svg>
+            Schedule a Meeting
+          </button>
+
+          {/* Footer note */}
+          <p className="book-call-note">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+            </svg>
+            Times shown in your local timezone · Powered by Calendly
+          </p>
         </div>
       </div>
     </section>
@@ -656,6 +1021,7 @@ function ContactSection() {
 // ── App ────────────────────────────────────────────────────
 export default function App() {
   const { dark, toggle } = useTheme()
+  const [menuOpen, setMenuOpen] = useState(false)
 
   const navLinks = [
     { id: 'about',      label: 'About'      },
@@ -696,27 +1062,16 @@ export default function App() {
       }}/>
 
       {/* ── Navbar ───────────────────────────────────────── */}
-      <header style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100, padding: '10px 24px 0' }}>
-        <div className="glass-thick" style={{
-          maxWidth: 1440,
-          margin: '0 auto',
-          borderRadius: 20,
-          padding: '0 28px',
-        }}>
-          <nav style={{
-            height: 50,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            gap: 12,
-          }}>
-            {/* Logo */}
-            <span className="gradient-text" style={{ fontWeight: 800, fontSize: 17, letterSpacing: '-0.5px', flexShrink: 0 }}>
-              Gihan
-            </span>
+      <header className="navbar-header">
+        <div className="glass-thick navbar-container">
 
-            {/* Nav links */}
-            <ul style={{ display: 'flex', gap: 18, listStyle: 'none', margin: 0, padding: 0 }}>
+          {/* Main bar */}
+          <nav className="navbar-inner">
+            {/* Logo */}
+            <a href="#" className="gradient-text navbar-logo" onClick={e => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }) }}>Gihan</a>
+
+            {/* Desktop links */}
+            <ul className="navbar-links">
               {navLinks.map(({ id, label }) => (
                 <li key={id}>
                   <a href={`#${id}`} className="nav-link">{label}</a>
@@ -724,11 +1079,39 @@ export default function App() {
               ))}
             </ul>
 
-            {/* Theme toggle */}
-            <button className="theme-toggle" onClick={toggle} aria-label={dark ? 'Switch to light mode' : 'Switch to dark mode'}>
-              {dark ? <SunIcon /> : <MoonIcon />}
-            </button>
+            {/* Right controls */}
+            <div className="navbar-controls">
+              <button className="theme-toggle" onClick={toggle} aria-label={dark ? 'Switch to light mode' : 'Switch to dark mode'}>
+                {dark ? <SunIcon /> : <MoonIcon />}
+              </button>
+              {/* Hamburger — mobile only */}
+              <button
+                className="hamburger"
+                onClick={() => setMenuOpen(o => !o)}
+                aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+                aria-expanded={menuOpen}
+              >
+                {menuOpen
+                  ? <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                  : <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="3" y1="6"  x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+                }
+              </button>
+            </div>
           </nav>
+
+          {/* Mobile dropdown */}
+          {menuOpen && (
+            <ul className="navbar-mobile-menu">
+              {navLinks.map(({ id, label }) => (
+                <li key={id}>
+                  <a href={`#${id}`} className="navbar-mobile-link" onClick={() => setMenuOpen(false)}>
+                    {label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          )}
+
         </div>
       </header>
 
@@ -753,13 +1136,12 @@ export default function App() {
           {/* Headline */}
           <h1 className="hero-text-in hero-h1" style={{ animationDelay: '0.2s' }}>
             Hi, I'm{' '}
-            <span className="gradient-text">Gihan<br className="hero-br" />Dissanayaka</span>
+            <span className="gradient-text">Gihan<br className="hero-br" /> Dissanayaka</span>
           </h1>
 
           {/* Sub-description */}
           <p className="hero-text-in hero-desc" style={{ animationDelay: '0.35s' }}>
-            I build scalable, high-quality web applications with React, Angular,
-            Express and Spring Boot — from pixel-perfect UIs to robust back-end APIs.
+            Building scalable, high-performance web applications — from intuitive frontends to robust backend systems.
           </p>
 
           {/* CTA buttons */}
@@ -799,18 +1181,23 @@ export default function App() {
 
               <p style={{ color: 'var(--text-secondary)', fontSize: 15, lineHeight: 1.8, margin: '0 0 14px' }}>
                 I'm <strong style={{ color: 'var(--text)' }}>Gihan Dissanayaka</strong> — a Senior Full-Stack Engineer
-                with <strong style={{ color: 'var(--text)' }}>3+ years of expertise</strong> building and optimising
-                multi-region enterprise applications in the <strong style={{ color: 'var(--text)' }}>travel domain</strong>.
+                with <strong style={{ color: 'var(--text)' }}>3+ years of expertise</strong> delivering scalable, enterprise-grade 
+                applications in the <strong style={{ color: 'var(--text)' }}>travel and ERP domains</strong>.
               </p>
               <p style={{ color: 'var(--text-muted)', fontSize: 15, lineHeight: 1.8, margin: '0 0 14px' }}>
-                Proficient in <strong style={{ color: 'var(--text-secondary)' }}>Java, Spring Boot, TypeScript</strong> and{' '}
-                <strong style={{ color: 'var(--text-secondary)' }}>Angular</strong>, I have a proven track record of
-                crafting scalable, secure, and user-focused solutions — from reusable component libraries
-                to high-throughput back-end services.
+                With expertise in <strong style={{ color: 'var(--text)' }}>Angular, React, Spring Boot, and Express,</strong> I design 
+                and build high-performance systems — from intuitive, reusable frontend architectures to robust backend services 
+                handling complex business logic.
               </p>
+              <p style={{ color: 'var(--text-muted)', fontSize: 15, lineHeight: 1.8, margin: '0 0 14px' }}>
+                I currently lead end-to-end implementation workflows, leveraging AI-assisted development 
+                practices alongside modern DevOps tooling, including Docker, Kubernetes, and CI/CD pipelines, 
+                to ensure reliable and efficient deployments.
+              </p>
+
               <p style={{ color: 'var(--text-muted)', fontSize: 15, lineHeight: 1.8, margin: 0 }}>
-                I thrive on enhancing system performance, elevating developer experience, and delivering
-                seamless user journeys through innovative design and engineering practices.
+                My focus is on performance, scalability, and clean engineering — enabling teams to move faster 
+                while delivering seamless user experiences.
               </p>
             </div>
 
@@ -879,16 +1266,7 @@ export default function App() {
         <HighlightsSection />
 
         {/* Projects */}
-        <section id="projects" style={{ paddingTop: 100 }}>
-          <div className="glass-card" style={{ padding: '40px 44px' }}>
-            <h2 className="gradient-text" style={{ fontSize: 30, fontWeight: 700, letterSpacing: '-0.6px', margin: '0 0 10px' }}>
-              Projects
-            </h2>
-            <p style={{ color: 'var(--text-muted)', margin: 0, fontSize: 15, lineHeight: 1.65 }}>
-              Projects coming soon…
-            </p>
-          </div>
-        </section>
+        <ProjectsSection />
 
         {/* Contact */}
         <ContactSection />
@@ -931,7 +1309,7 @@ export default function App() {
                 </svg>
               </a>
               {/* LinkedIn */}
-              <a href="https://www.linkedin.com/in/gihandissanayaka/" target="_blank" rel="noopener noreferrer" className="footer-social-btn" aria-label="LinkedIn">
+              <a href="https://www.linkedin.com/in/gihan-dissanayaka/" target="_blank" rel="noopener noreferrer" className="footer-social-btn" aria-label="LinkedIn">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/>
                 </svg>
