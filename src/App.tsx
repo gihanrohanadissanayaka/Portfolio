@@ -363,6 +363,17 @@ const HIGHLIGHTS = [
     title: 'Performance & Scale',
     desc: 'Optimised system performance and reliability across distributed platforms, diagnosing and resolving production issues in high-load environments.',
   },
+  {
+    icon: (
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/>
+        <path d="M20 3v4M22 5h-4M4 17v2M5 18H3"/>
+      </svg>
+    ),
+    color: 'var(--tint-pink)',
+    title: 'Vibe Coding',
+    desc: 'Embracing AI-native development — using LLMs and AI pair programming to prototype rapidly, iterate boldly, and ship production-ready features at unprecedented speed.',
+  },
 ]
 
 function HighlightsSection() {
@@ -550,6 +561,42 @@ const PROJECTS = [
       'Implemented real-time waitlist promotion with automated email triggers',
       'Built a recurring membership billing module with grace-period handling',
       'Reduced average booking time by 80% compared to the previous phone-based process',
+    ],
+    screenshots: ['/project_gym_ss_01.png', '/project_gym_ss_02.png', '/project_gym_ss_03.png'],
+  },
+  {
+    id: 'tea-erp',
+    title: 'Tea ERP System',
+    tagline: 'Enterprise Resource Planning solution for tea manufacturing and export businesses',
+    tags: ['Angular', 'Spring Boot', 'Oracle SQL', 'Docker', 'Kubernetes', 'Enterprise System'],
+    thumbnail: '/project_gym_cover.png',
+    demoUrl: null as string | null,
+    githubUrl: null as string | null,
+    problem: 'Tea manufacturing and export businesses rely on fragmented systems to manage inquiries, order processing, production tracking, and invoicing workflows. This leads to inefficiencies, data inconsistencies, and limited visibility across the full operation — making it nearly impossible to make timely, informed decisions.',
+    solution: 'The Tea ERP system provides a centralised, scalable platform to manage the full business lifecycle — from inquiry to invoice. It enables real-time tracking, streamlined workflows, and improved decision-making through a unified dashboard and structured data management across every department.',
+    features: [
+      { emoji: '📊', title: 'Sales Dashboard & Analytics', desc: 'Real-time KPIs and business insights in a unified view' },
+      { emoji: '📦', title: 'Order & Contract Management', desc: 'Full lifecycle management from order creation to fulfilment' },
+      { emoji: '🧾', title: 'Invoice & Payment Tracking', desc: 'Structured invoicing with payment status and history' },
+      { emoji: '👥', title: 'Customer & Inquiry Management', desc: 'Centralised CRM for customers, leads, and inquiry pipelines' },
+      { emoji: '🔄', title: 'Production Workflow Tracking', desc: 'End-to-end visibility into manufacturing stages' },
+      { emoji: '🧩', title: 'Modular Master Data', desc: 'Reusable, structured master data across all ERP modules' },
+      { emoji: '📈', title: 'Pipeline Visibility', desc: 'Inquiry-to-conversion funnel tracking with stage analytics' },
+      { emoji: '🔍', title: 'Advanced Filtering & Search', desc: 'Powerful search and filter across large enterprise datasets' },
+    ],
+    techStack: [
+      { label: 'Frontend', color: 'var(--tint)', items: ['Angular', 'TypeScript', 'SCSS'] },
+      { label: 'Backend', color: 'var(--tint-indigo)', items: ['Java', 'Spring Boot', 'Oracle SQL', 'REST APIs'] },
+      { label: 'DevOps', color: 'var(--tint-teal)', items: ['Docker', 'Kubernetes', 'CI/CD Pipelines'] },
+    ],
+    highlights: [
+      'Designed and implemented scalable REST APIs for complex enterprise workflows',
+      'Built modular Angular components for reusable UI across all ERP modules',
+      'Implemented backend pagination and filtering strategies for large datasets',
+      'Optimised Oracle SQL performance with indexing and query tuning',
+      'Developed end-to-end CI/CD pipelines for automated, zero-downtime deployments',
+      'Containerised applications using Docker and orchestrated with Kubernetes',
+      'Ensured high availability and multi-region readiness across the platform',
     ],
     screenshots: ['/project_gym_ss_01.png', '/project_gym_ss_02.png', '/project_gym_ss_03.png'],
   },
@@ -1142,6 +1189,7 @@ export default function App() {
           {/* Sub-description */}
           <p className="hero-text-in hero-desc" style={{ animationDelay: '0.35s' }}>
             Building scalable, high-performance web applications — from intuitive frontends to robust backend systems.
+            Now shipping faster than ever with <span style={{ color: 'var(--tint-pink)', fontWeight: 600 }}>vibe coding</span>.
           </p>
 
           {/* CTA buttons */}
